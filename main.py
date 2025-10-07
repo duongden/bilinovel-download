@@ -14,5 +14,5 @@ if __name__ == '__main__':
     setThemeColor('#FF7233')
     app = QApplication(sys.argv)
     w = MainWindow()
-    w.show()
+    w.show() # with the 
     app.exec_()

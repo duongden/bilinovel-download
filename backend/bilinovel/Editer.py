@@ -92,7 +92,7 @@ class Editer(object):
             bf = BeautifulSoup(req, 'html.parser')
             p_eles = self.tab.eles('tag:p')
             for p in p_eles:
-                if p.style(style='display') == 'none':
+                if p.style(style='position') == 'absolute':
                     all_attrs = p.attrs
                     for key in all_attrs.keys():
                         if 'data-' in key:
