@@ -55,40 +55,36 @@ class Editer(object):
         self.url_buffer = []
         self.max_thread_num = 8
         self.pool = ThreadPoolExecutor(int(num_thread))
-        
-    # # 获取html文档内容
-    # def get_html(self, url, is_gbk=False):
-    #     while True:
-    #         self.tab.get(url)
-    #         req = self.tab.html
-    #         while '<title>Access denied | www.linovelib.com used Cloudflare to restrict access</title>' in req:
-    #             print('下载频繁，触发反爬，5秒后重试....')
-    #             time.sleep(5)
-    #             self.tab.get(url)
-    #             req = self.tab.html
-    #         if is_gbk:
-    #             req.encoding = 'GBK'       #这里是网页的编码转换，根据网页的实际需要进行修改，经测试这个编码没有问题
-    #         break
-    #     if self.interval>0:
-    #         time.sleep(self.interval)
-    #     return req
 
 
     def get_html(self, url, is_gbk=False, is_main_text=False):
         while True:
             self.tab.get(url)
+            if is_main_text:
+                time.sleep(2)
             req = self.tab.html
             while '<title>Access denied | www.linovelib.com used Cloudflare to restrict access</title>' in req:
                 print('下载频繁，触发反爬，5秒后重试....')
-                time.sleep(5)
+                time.sleep(3)
                 self.tab.get(url)
+                if is_main_text:
+                    time.sleep(2)
                 req = self.tab.html
             if is_gbk:
                 req.encoding = 'GBK'       #这里是网页的编码转换，根据网页的实际需要进行修改，经测试这个编码没有问题
             break
 
 
+        #  ## write the req in the txt
+        # file_name = url.replace('https://', '').replace('/', '_')+'.html'
+        # file_path = os.path.join('out222', file_name)
+        # os.makedirs('out222', exist_ok=True)
+        # with open(file_path, 'w', encoding='utf-8') as f:
+        #     f.write(str(req))
+
+
         if is_main_text:
+            # find and delete the error sentence
             bf = BeautifulSoup(req, 'html.parser')
             p_eles = self.tab.eles('tag:p')
             for p in p_eles:
@@ -98,7 +94,6 @@ class Editer(object):
                         if 'data-' in key:
                             class_key = key
                             class_value = all_attrs[class_key]
-                    # class_value = p.attr('class')
                     p_elements_to_remove = bf.find_all('p', {class_key: class_value})
                     for p in p_elements_to_remove:
                         p.decompose()
@@ -115,8 +110,8 @@ class Editer(object):
                     
             req = str(bf)
 
-        if self.interval>0:
-            time.sleep(self.interval)
+        if self.interval>2:
+            time.sleep(self.interval-2)
         return req
     
     def get_html_content(self, url, is_buffer=False):
